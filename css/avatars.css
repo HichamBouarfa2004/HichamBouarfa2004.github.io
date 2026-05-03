@@ -1,0 +1,94 @@
+/* ============================================
+   المعلم الرفيق - Avatars (SVG + CSS fallback)
+   Clean, scalable, responsive
+   ============================================ */
+
+/* Base avatar container */
+.sibawayh-avatar,
+.al-farahidi-avatar {
+    display: inline-block;
+    width: 180px;
+    height: 240px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Sibawayh - blue theme, logical, scholar */
+.sibawayh-avatar {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280'%3E%3Crect width='200' height='280' fill='%231E3A8A' rx='20'/%3E%3Ccircle cx='100' cy='80' r='40' fill='%23D4AF9A'/%3E%3Crect x='65' y='110' width='70' height='50' fill='%23D4AF9A' rx='10'/%3E%3Ccircle cx='80' cy='70' r='5' fill='black'/%3E%3Ccircle cx='120' cy='70' r='5' fill='black'/%3E%3Cpath d='M90 90 Q100 100 110 90' stroke='black' stroke-width='2' fill='none'/%3E%3Crect x='30' y='160' width='140' height='100' fill='%231E3A8A' rx='10'/%3E%3Cpath d='M40 180 L160 180' stroke='%233B82F6' stroke-width='3' fill='none'/%3E%3Ctext x='100' y='230' font-size='20' text-anchor='middle' fill='white' font-family='Cairo'%3Eسيبويه%3C/text%3E%3C/svg%3E");
+}
+
+/* Al-Farahidi - green theme, artistic, poet */
+.al-farahidi-avatar {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280'%3E%3Crect width='200' height='280' fill='%23047857' rx='20'/%3E%3Ccircle cx='100' cy='80' r='40' fill='%23D4AF9A'/%3E%3Crect x='65' y='110' width='70' height='50' fill='%23D4AF9A' rx='10'/%3E%3Ccircle cx='80' cy='70' r='5' fill='black'/%3E%3Ccircle cx='120' cy='70' r='5' fill='black'/%3E%3Cpath d='M90 90 Q100 100 110 90' stroke='black' stroke-width='2' fill='none'/%3E%3Crect x='30' y='160' width='140' height='100' fill='%23047857' rx='10'/%3E%3Cpath d='M40 180 L160 180' stroke='%2310B981' stroke-width='3' fill='none'/%3E%3Ctext x='100' y='230' font-size='18' text-anchor='middle' fill='white' font-family='Cairo'%3Eالفراهيدي%3C/text%3E%3C/svg%3E");
+}
+
+/* Avatar in selection cards */
+.avatar-illustration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.avatar-illustration .sibawayh-avatar,
+.avatar-illustration .al-farahidi-avatar {
+    width: 160px;
+    height: 200px;
+}
+
+/* Avatar in helper (mission screen) */
+.helper-avatar-display .sibawayh-avatar,
+.helper-avatar-display .al-farahidi-avatar {
+    width: 140px;
+    height: 180px;
+}
+
+/* Avatar in hint popup (small) */
+.hint-avatar-small .sibawayh-avatar,
+.hint-avatar-small .al-farahidi-avatar {
+    width: 80px;
+    height: 100px;
+}
+
+/* Hover animation */
+.avatar-card:hover .avatar-illustration {
+    animation: avatarFloat 0.6s ease-in-out infinite;
+}
+
+@keyframes avatarFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Speaking hint animation */
+.hint-popup .hint-avatar-small {
+    animation: avatarSpeak 0.4s ease-in-out;
+}
+
+@keyframes avatarSpeak {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .sibawayh-avatar,
+    .al-farahidi-avatar {
+        width: 120px;
+        height: 160px;
+    }
+    .avatar-illustration .sibawayh-avatar,
+    .avatar-illustration .al-farahidi-avatar {
+        width: 100px;
+        height: 130px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .avatar-card:hover .avatar-illustration {
+        animation: none;
+    }
+}

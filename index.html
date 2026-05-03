@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="المعلم الرفيق - لعبة تعليمية تفاعلية لقواعد اللغة العربية">
+    <title>المعلم الرفيق | مفاتيح التعلم الذكية</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="assets/images/icon.jpeg">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/avatars.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        
+        <!-- ==================== WELCOME SCREEN ==================== -->
+        <section id="welcomeScreen" class="screen screen-active">
+            <div class="welcome-content">
+                <div class="welcome-logo-container">
+                    <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="app-logo">
+                </div>
+                <p class="welcome-subtitle">من إعداد: ليلى بعرفة</p>
+                <h1 class="welcome-title">مفاتيح التعلم الذكية</h1>
+                <p class="welcome-description">لعبة تعليمية تفاعلية لطلاب الثالثة إعدادي</p>
+                <button id="startBtn" class="btn btn-primary btn-lg">ابدأ الرحلة</button>
+            </div>
+        </section>
+
+        <!-- ==================== AVATAR SELECTION ==================== -->
+        <section id="avatarScreen" class="screen">
+            <div class="avatar-selection-content">
+                <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="page-logo">
+                <h2>اختر رفيقك في رحلة التعلم</h2>
+                <div class="avatar-cards-container">
+                    <div class="avatar-card" data-avatar="sibawayh">
+                        <span class="avatar-role-badge">مرشد المنطق</span>
+                        <img src="assets/images/avatar-sibawayh.jpeg" alt="سيبويه" class="avatar-image">
+                        <h3>سيبويه</h3>
+                        <p class="avatar-specialty">المنطق والقواعد</p>
+                        <p class="avatar-description">يساعدك في فهم البنية الإعرابية</p>
+                        <span class="avatar-ability">القوة: تحليل النصوص</span>
+                    </div>
+                    <div class="avatar-card" data-avatar="al-farahidi">
+                        <span class="avatar-role-badge">مرشد الإيقاع</span>
+                        <img src="assets/images/avatar-al-farahidi.jpeg" alt="الفراهيدي" class="avatar-image">
+                        <h3>الفراهيدي</h3>
+                        <p class="avatar-specialty">الجمال اللغوي</p>
+                        <p class="avatar-description">يساعدك في فهم السياق والنطق</p>
+                        <span class="avatar-ability">القوة: التحليل السياقي</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MISSION HUB ==================== -->
+        <section id="hubScreen" class="screen">
+            <div class="hub-container">
+                <header class="hub-header">
+                    <div class="hub-branding">
+                        <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="hub-logo">
+                        <span class="hub-title">المعلم الرفيق</span>
+                    </div>
+                    <div class="avatar-display">
+                        <img id="headerAvatarImg" src="assets/images/avatar-sibawayh.jpeg" alt="avatar" class="header-avatar-img">
+                        <span id="headerAvatarName" class="header-avatar-name">سيبويه</span>
+                    </div>
+                    <div class="stats-container">
+                        <div class="energy-bar-wrapper">
+                            <label>طاقة الفصاحة</label>
+                            <div class="energy-bar">
+                                <div id="energyFill" class="energy-fill" style="width:0%"></div>
+                            </div>
+                            <span id="energyText">0%</span>
+                        </div>
+                        <div class="keys-display">
+                            <label>المفاتيح المكتسبة</label>
+                            <div id="keysContainer" class="keys-grid"></div>
+                            <span id="keysCount">0/12</span>
+                        </div>
+                    </div>
+                    <button id="profileBtn" class="btn btn-secondary btn-sm">👤 ملفك</button>
+                </header>
+
+<div class="world-map-container">
+    <div class="ocean-background"></div>
+    <div class="ocean-waves"></div>
+    <svg id="progressPathLayer" class="progress-path-layer" aria-hidden="true"></svg>
+    <div class="path-caption">اتبع مسار التحدي من ١ إلى ٤ ثم افتح معمل الابتكار</div>
+    <div class="islands-container">
+        <!-- Island 1: Idhafa (الإضافة) -->
+        <div class="island-card island" data-mission="idhafa" id="island-idhafa">
+            <div class="island-visual">
+                <img src="assets/images/island-idhafa.jpeg" alt="الإضافة" class="island-image" loading="lazy">
+                <div class="island-overlay" aria-hidden="true"></div>
+            </div>
+            <div class="island-label-card">
+                <span class="island-order">1</span>
+                <div class="island-title">الإضافة</div>
+                <div class="island-keys"><span class="key-glyph" aria-hidden="true">🔑</span><span><span id="keys-idhafa">0</span>/3</span></div>
+            </div>
+        </div>
+        
+        <!-- Island 2: Diptote (الممنوع من الصرف) -->
+        <div class="island-card island" data-mission="diptote" id="island-diptote">
+            <div class="island-visual">
+                <img src="assets/images/island-diptote.jpeg" alt="الممنوع من الصرف" class="island-image" loading="lazy">
+                <div class="island-overlay" aria-hidden="true"></div>
+            </div>
+            <div class="island-label-card">
+                <span class="island-order">2</span>
+                <div class="island-title">الممنوع من الصرف</div>
+                <div class="island-keys"><span class="key-glyph" aria-hidden="true">🔑</span><span><span id="keys-diptote">0</span>/3</span></div>
+            </div>
+        </div>
+        
+        <!-- Island 3: Participles (الأسماء المشتقة) -->
+        <div class="island-card island" data-mission="participles" id="island-participles">
+            <div class="island-visual">
+                <img src="assets/images/island-participles.jpeg" alt="الأسماء المشتقة" class="island-image" loading="lazy">
+                <div class="island-overlay" aria-hidden="true"></div>
+            </div>
+            <div class="island-label-card">
+                <span class="island-order">3</span>
+                <div class="island-title">الأسماء المشتقة</div>
+                <div class="island-keys"><span class="key-glyph" aria-hidden="true">🔑</span><span><span id="keys-participles">0</span>/3</span></div>
+            </div>
+        </div>
+        
+        <!-- Island 4: Vocative (النداء) -->
+        <div class="island-card island" data-mission="vocative" id="island-vocative">
+            <div class="island-visual">
+                <img src="assets/images/island-vocative.jpeg" alt="النداء" class="island-image" loading="lazy">
+                <div class="island-overlay" aria-hidden="true"></div>
+            </div>
+            <div class="island-label-card">
+                <span class="island-order">4</span>
+                <div class="island-title">النداء</div>
+                <div class="island-keys"><span class="key-glyph" aria-hidden="true">🔑</span><span><span id="keys-vocative">0</span>/3</span></div>
+            </div>
+        </div>
+        
+        <!-- Innovation Lab (معمل الابتكار) - Central -->
+        <div class="island-card island innovation-island" data-mission="lab" id="island-lab">
+            <div class="island-visual">
+                <img src="assets/images/island-lab.jpeg" alt="معمل الابتكار" class="island-image" loading="lazy">
+                <div class="island-overlay" aria-hidden="true"></div>
+                <div class="lab-locked-overlay" id="lab-lock">
+                    <div class="lab-lock-icon">🔒</div>
+                </div>
+            </div>
+            <div class="island-label-card">
+                <span class="island-order">★</span>
+                <div class="island-title">معمل الابتكار</div>
+                <div class="island-keys locked"><span class="key-glyph" aria-hidden="true">🔒</span><span>محجوب</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </section>
+
+        <!-- ==================== MISSION SCREEN ==================== -->
+        <section id="missionScreen" class="screen">
+            <div class="mission-container">
+                <header class="mission-header">
+                    <button id="backBtn" class="btn btn-icon">← العودة</button>
+                    <div class="mission-info">
+                        <h2 id="missionTitle">المهمة</h2>
+                        <span id="questionCounter">0/0</span>
+                    </div>
+                    <div class="energy-mini">
+                        <span id="missionEnergy">0%</span>
+                    </div>
+                </header>
+
+                <main class="mission-content">
+                    <div class="scenario-box">
+                        <p id="scenarioText"></p>
+                    </div>
+
+                    <article class="question-box">
+                        <div class="question-main">
+                            <p id="questionText" class="question-text"></p>
+                            <div id="questionContent" class="question-content"></div>
+                        </div>
+                        <aside id="avatarHelper" class="avatar-helper">
+                            <div id="helperAvatar" class="helper-avatar-display"></div>
+                            <p id="companionBubble" class="companion-bubble">أنا معك. اختر بطاقة الإجابة التي تراها أدق.</p>
+                        </aside>
+                    </article>
+
+                    <div id="feedbackBox" class="feedback-box hidden" role="status" aria-live="polite" aria-atomic="true">
+                        <p id="feedbackText"></p>
+                    </div>
+
+                    <div class="mission-buttons">
+                        <button id="hintBtn" class="btn btn-secondary">❓ مساعدة</button>
+                        <button id="submitBtn" class="btn btn-primary">تحقق</button>
+                        <button id="nextBtn" class="btn btn-primary hidden">التالي ←</button>
+                    </div>
+                </main>
+
+                <div id="victoryDrawer" class="victory-drawer hidden" aria-live="polite" aria-atomic="true">
+                    <div class="victory-drawer-content">
+                        <div class="victory-celebration" aria-hidden="true">🎊</div>
+                        <div class="victory-text-wrap">
+                            <div id="victoryTitle" class="victory-title">أحسنت!</div>
+                            <p id="victoryMessage" class="victory-message">إجابة صحيحة. استمر واصل التحدي.</p>
+                        </div>
+                        <button id="victoryContinueBtn" class="btn btn-primary victory-continue">متابعة</button>
+                    </div>
+                    <div class="victory-confetti" aria-hidden="true"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== HINT POPUP ==================== -->
+        <div id="hintPopup" class="popup hidden" role="dialog" aria-modal="true" aria-labelledby="hintPopupTitle" aria-hidden="true">
+            <div class="popup-overlay"></div>
+            <div class="popup-content hint-popup">
+                <button class="popup-close">×</button>
+                <div class="popup-header">
+                    <div id="hintAvatarDisplay" class="hint-avatar-small"></div>
+                    <h3 id="hintPopupTitle">لا تقلق! دعني أساعدك...</h3>
+                </div>
+                <div class="popup-body">
+                    <p id="hintText"></p>
+                </div>
+                <div class="popup-footer">
+                    <button id="hintRetryBtn" class="btn btn-secondary">فهمت، سأحاول مجدداً</button>
+                    <button id="hintMoreBtn" class="btn btn-secondary hidden">أعطني مثالاً آخر</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SUCCESS POPUP ==================== -->
+        <div id="successPopup" class="popup hidden" role="dialog" aria-modal="true" aria-labelledby="successPopupTitle" aria-hidden="true">
+            <div class="popup-overlay"></div>
+            <div class="popup-content success-popup">
+                <div class="celebration-animation">🎉</div>
+                <h2 id="successPopupTitle">ممتاز!</h2>
+                <p>لقد فتحت مفتاحاً ذكياً!</p>
+                <div id="earnedKeyDisplay" class="earned-key"></div>
+                <button id="successBtn" class="btn btn-primary">متابعة</button>
+            </div>
+        </div>
+
+        <!-- ==================== INNOVATION LAB ==================== -->
+        <section id="labScreen" class="screen">
+            <div class="lab-container">
+                <header class="lab-header">
+                    <button id="labBackBtn" class="btn btn-icon">← العودة</button>
+                    <h2>معمل الابتكار</h2>
+                </header>
+                <main class="lab-content">
+                    <section class="lab-section">
+                        <h3>اصنع جملتك الخاصة</h3>
+                        <div class="lab-input-group">
+                            <textarea id="sentenceInput" class="lab-textarea" placeholder="اكتب جملتك هنا..." dir="rtl"></textarea>
+                            <button id="checkGrammarBtn" class="btn btn-primary">📝 اقتراحات أولية</button>
+                        </div>
+                        <div id="grammarFeedback" class="grammar-feedback hidden"></div>
+                    </section>
+                    <section class="lab-section">
+                        <h3>شارك إبداعك</h3>
+                        <button id="shareBtn" class="btn btn-secondary">📋 انسخ إلى الحافظة</button>
+                        <p class="lab-note" style="font-size:0.8rem; color:#6B7280; margin-top:0.5rem;">الجمل تبقى على جهازك فقط</p>
+                    </section>
+                    <section class="lab-section">
+                        <h3>معرض إبداعاتي</h3>
+                        <div id="creativeGallery" class="creative-gallery"></div>
+                    </section>
+                </main>
+            </div>
+        </section>
+
+        <!-- ==================== PROFILE SCREEN ==================== -->
+        <section id="profileScreen" class="screen">
+            <div class="profile-container">
+                <header class="profile-header">
+                    <button id="profileBackBtn" class="btn btn-icon">← العودة</button>
+                    <h2>ملفك الشخصي</h2>
+                </header>
+                <main class="profile-content">
+                    <div class="profile-section">
+                        <h3>معلومات اللاعب</h3>
+                        <p><strong>رفيقك:</strong> <span id="profileAvatar">--</span></p>
+                        <p><strong>المستوى:</strong> <span id="profileLevel">مبتدئ</span></p>
+                    </div>
+                    <div class="profile-section">
+                        <h3>الإحصائيات</h3>
+                        <p><strong>طاقة الفصاحة:</strong> <span id="profileEnergy">0%</span></p>
+                        <p><strong>المفاتيح المكتسبة:</strong> <span id="profileKeys">0/12</span></p>
+                        <p><strong>الأسئلة الصحيحة:</strong> <span id="profileCorrect">0</span></p>
+                    </div>
+                    <div class="profile-section">
+                        <h3>الخيارات</h3>
+                        <button id="exportProgressBtn" class="btn btn-secondary">📤 تصدير التقدم</button>
+                        <button id="importProgressBtn" class="btn btn-secondary">📥 استيراد التقدم</button>
+                        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+                        <button id="certificateBtn" class="btn btn-secondary">🏆 شهادة الإتقان</button>
+                        <button id="resetBtn" class="btn btn-danger">🔄 إعادة تعيين التقدم</button>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- SortableJS for reliable drag-drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <!-- JavaScript modules (order matters) -->
+    <script src="js/utils/arabicUtils.js"></script>
+    <script src="js/utils/dragDropHelper.js"></script>
+    <script src="js/data/missions.js"></script>
+    <script src="js/data/hints.js"></script>
+    <script src="js/core/GameState.js"></script>
+    <script src="js/core/ScoringEngine.js"></script>
+    <script src="js/core/MissionEngine.js"></script>
+    <script src="js/core/Storage.js"></script>
+    <script src="js/ui/AvatarRenderer.js"></script>
+    <script src="js/ui/PopupSystem.js"></script>
+    <script src="js/ui/ScreenManager.js"></script>
+    <script src="js/ui/MapUI.js"></script>
+    <script src="js/ui/MissionUI.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
