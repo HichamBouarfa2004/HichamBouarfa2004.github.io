@@ -333,5 +333,16 @@
     <script src="js/ui/MapUI.js"></script>
     <script src="js/ui/MissionUI.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+    window.addEventListener('load', function() {
+        console.log('=== Diagnostic ===');
+        console.log('missionEngine:', typeof window.missionEngine);
+        console.log('missionUI:', typeof window.missionUI);
+        console.log('mapUI:', typeof window.mapUI);
+        console.log('screenManager:', typeof window.screenManager);
+        if (window.mapUI) console.log('mapUI.initMap exists?', typeof window.mapUI.initMap);
+    });
+</script>
 </body>
 </html>
