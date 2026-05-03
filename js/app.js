@@ -3,8 +3,8 @@
    Initialises all modules, sets up event listeners
    ============================================ */
 
-// Wait for DOM and all modules to be ready
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize application core (handle both early and late loading)
+function initializeApp() {
     // 1. Load saved game state from localStorage
     if (window.StorageManager) {
         window.StorageManager.loadGameState();
@@ -32,7 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 5. Initial energy and keys display
     updateEnergyAndKeys();
-});
+}
+
+// Handle both cases: DOM still loading vs already loaded (GitHub Pages compatibility)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM already loaded
+    initializeApp();
+}
 
 /**
  * Initial UI setup based on loaded state

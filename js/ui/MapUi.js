@@ -290,12 +290,20 @@ class MapUI {
     }
 }
 
-// Auto‑initialise when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.gameState) {
+// Auto‑initialise when DOM is ready (handle both early and late script loading)
+function initializeMapUI() {
+    if (window.gameState && !window.mapUI) {
         window.mapUI = new MapUI();
         window.mapUI.initMap();
-    } else {
+    } else if (!window.gameState) {
         console.error('GameState not ready for MapUI');
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    // DOM still loading, use event listener
+    document.addEventListener('DOMContentLoaded', initializeMapUI);
+} else {
+    // DOM already loaded (common on GitHub Pages with deferred scripts)
+    initializeMapUI();
+}
