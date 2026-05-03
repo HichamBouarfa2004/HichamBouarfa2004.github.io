@@ -248,10 +248,15 @@ class MapUI {
     }
 
     attachIslandClickEvents() {
+        const islands = document.querySelectorAll('.island-card');
+        console.log('Attaching click events to', islands.length, 'islands');
+        
         document.querySelectorAll('.island-card').forEach(island => {
             island.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const missionId = island.getAttribute('data-mission');
+                console.log('Island clicked:', missionId);
+                
                 if (!missionId) return;
 
                 if (missionId === 'lab') {
@@ -261,6 +266,7 @@ class MapUI {
                     const currentMission = this.gameState.get('currentMission');
                     const totalQuestions = this.gameState.get('totalQuestions');
                     const missionCompleted = this.gameState.get('missionCompletedPendingFinalize');
+                    console.log('Mission state:', { currentMission, totalQuestions, missionCompleted });
 
                     if (currentMission === missionId && totalQuestions > 0 && !missionCompleted) {
                         window.screenManager.goToScreen('mission');
@@ -292,18 +298,33 @@ class MapUI {
 
 // Auto‑initialise when DOM is ready (handle both early and late script loading)
 function initializeMapUI() {
-    if (window.gameState && !window.mapUI) {
+    if (window.mapUI) return; // Already initialized
+    
+    if (!window.gameState) {
+        // GameState not ready yet, retry after a short delay
+        console.warn('GameState not ready, retrying MapUI initialization...');
+        setTimeout(initializeMapUI, 100);
+        return;
+    }
+    
+    try {
         window.mapUI = new MapUI();
         window.mapUI.initMap();
-    } else if (!window.gameState) {
-        console.error('GameState not ready for MapUI');
+        console.log('MapUI initialized successfully');
+    } catch (e) {
+        console.error('Error initializing MapUI:', e);
     }
 }
 
 if (document.readyState === 'loading') {
-    // DOM still loading, use event listener
     document.addEventListener('DOMContentLoaded', initializeMapUI);
 } else {
-    // DOM already loaded (common on GitHub Pages with deferred scripts)
     initializeMapUI();
 }
+
+// Also try on window load as fallback
+window.addEventListener('load', () => {
+    if (!window.mapUI && window.gameState) {
+        initializeMapUI();
+    }
+});

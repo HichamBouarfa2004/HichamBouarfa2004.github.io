@@ -5,6 +5,13 @@
 
 // Initialize application core (handle both early and late loading)
 function initializeApp() {
+    // Safety check: ensure all required modules exist
+    if (!window.gameState || !window.screenManager || !window.StorageManager) {
+        console.warn('Required modules not ready, retrying app initialization...');
+        setTimeout(initializeApp, 100);
+        return;
+    }
+
     // 1. Load saved game state from localStorage
     if (window.StorageManager) {
         window.StorageManager.loadGameState();
