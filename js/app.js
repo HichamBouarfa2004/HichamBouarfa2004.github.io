@@ -10,15 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
         window.StorageManager.loadGameState();
     }
     // Initialise world map if we are on hub screen or at startup
-    if (window.mapUI) {
-    window.mapUI.initMap();
-    // Subscribe to state changes to update map dynamically
-    window.gameState.subscribe(() => {
-        if (window.screenManager.getCurrentScreen() === 'hub') {
-            window.mapUI.updateIslandStates();
-        }
-    });
+    if (window.gameState && window.screenManager) {
+        window.gameState.subscribe(() => {
+            if (window.screenManager.getCurrentScreen() === 'hub' && window.mapUI) {
+                window.mapUI.updateIslandStates();
+            }
+        });
     }
+
     
     // 2. Initialize UI based on current state
     initUI();
