@@ -3,6 +3,8 @@
    Renders questions, handles answer submission, sorting
    ============================================ */
 
+import Sortable from 'sortablejs';
+
 class MissionUI {
     constructor() {
         this.missionEngine = window.missionEngine;
@@ -50,21 +52,40 @@ class MissionUI {
         const missionTitle = document.getElementById('missionTitle');
         const scenarioText = document.getElementById('scenarioText');
         const questionCounter = document.getElementById('questionCounter');
+        const progressFill = document.getElementById('progressFill');
         const currentQ = this.gameState.get('currentQuestion');
         const total = this.gameState.get('totalQuestions');
+        const progressPct = total > 0 ? ((currentQ) / total) * 100 : 0;
 
         if (missionTitle) missionTitle.textContent = mission.title;
         if (scenarioText) scenarioText.textContent = mission.scenario;
         if (questionCounter) questionCounter.textContent = `${currentQ + 1}/${total}`;
-        this._setCompanionMessage('أنا معك. اختر بطاقة الإجابة التي تراها أدق.');
-        this._setCompanionReaction('reaction-thoughtful');
+        if (progressFill) progressFill.style.width = `${progressPct}%`;
+        const introMessages = {
+            'multiple-choice': 'اختر الإجابة التي تراها أدق.',
+            'fill-blank': 'املأ الفراغ بالكلمة المناسبة.',
+            'sorting': 'اسحب كل كلمة إلى مكانها الصحيح.'
+        };
+        this._setCompanionMessage(introMessages[question.type] || 'أنا معك. أجب على السؤال.');
+        this._setCompanionReaction('reaction-encouraging');
         this._hideVictoryDrawer();
+        if (this.popupSystem) this.popupSystem.hideSuccessToast();
+
+        const questionBox = document.querySelector('.question-box');
+        if (questionBox) {
+            questionBox.classList.remove('fade-in');
+            void questionBox.offsetWidth;
+            questionBox.classList.add('fade-in');
+        }
 
         const questionTextEl = document.getElementById('questionText');
         if (questionTextEl) questionTextEl.textContent = question.text;
 
         const feedbackBox = document.getElementById('feedbackBox');
-        if (feedbackBox) feedbackBox.classList.add('hidden');
+        if (feedbackBox) {
+            feedbackBox.classList.remove('shake');
+            feedbackBox.classList.add('hidden');
+        }
 
         const submitBtn = document.getElementById('submitBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -276,34 +297,46 @@ class MissionUI {
 
     _handleCorrect() {
         const missionCompletedPendingFinalize = this.gameState.get('missionCompletedPendingFinalize');
-        const title = missionCompletedPendingFinalize ? 'مذهل!' : 'أحسنت!';
-        const message = missionCompletedPendingFinalize
-            ? 'أتممت المهمة بالكامل. استعد للعودة إلى الخريطة.'
-            : 'واصل، السؤال التالي جاهز.';
 
-        this.popupSystem.showVictoryDrawer({
-            title,
-            message,
-            continueLabel: missionCompletedPendingFinalize ? 'العودة إلى الخريطة' : 'متابعة',
-            onContinue: () => {
-                if (missionCompletedPendingFinalize) {
+        if (missionCompletedPendingFinalize) {
+            this.popupSystem.showVictoryDrawer({
+                title: 'مذهل!',
+                message: 'أتممت المهمة بالكامل. استعد للعودة إلى الخريطة.',
+                continueLabel: 'العودة إلى الخريطة',
+                onContinue: () => {
                     this.isTransitioning = true;
                     const result = this.missionEngine.finalizeMissionCompletion();
                     this.popupSystem.showSuccessPopup(result?.keyType || 'bronze', () => {
                         this.screenManager.goToScreen('hub');
                         this.isTransitioning = false;
                     });
-                    return;
                 }
-                this.loadCurrentQuestion();
-            }
+            });
+            return;
+        }
+
+        this.popupSystem.showSuccessToast('أحسنت!', () => {
+            this.loadCurrentQuestion();
         });
     }
 
     _handleIncorrect() {
-        this.popupSystem.showFeedback('الخطأ خطوة نحو الصواب! 💪 حاول مجدداً', 'error');
-        this._setCompanionMessage('حاول مرة أخرى، ركز على الفكرة الأساسية في السؤال.');
+        const errorMessages = [
+            'حاول مرة أخرى، ركز على الفكرة الأساسية في السؤال.',
+            'ليس هذه المرة. أعد قراءة السؤال بتركيز.',
+            'تقريباً! فكر في القاعدة النحوية المطلوبة.'
+        ];
+        const attempt = this.gameState.get('currentQuestionIncorrect') || 0;
+        this.popupSystem.showFeedback('الخطأ خطوة نحو الصواب! حاول مجدداً', 'error');
+        this._setCompanionMessage(errorMessages[Math.min(attempt, errorMessages.length - 1)]);
         this._setCompanionReaction('reaction-encouraging');
+
+        const feedbackBox = document.getElementById('feedbackBox');
+        if (feedbackBox) {
+            feedbackBox.classList.remove('shake');
+            void feedbackBox.offsetWidth;
+            feedbackBox.classList.add('shake');
+        }
 
         const incorrectCount = this.gameState.get('currentQuestionIncorrect');
         if (incorrectCount === 2) {

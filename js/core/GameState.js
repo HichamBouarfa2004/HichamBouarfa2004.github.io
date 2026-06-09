@@ -5,6 +5,8 @@
 
 class GameState {
     constructor() {
+        const initialKeys = this._buildInitialKeys();
+        const maxStage = this._getMaxStage();
         this._state = {
             // Core
             currentScreen: 'welcome',
@@ -19,13 +21,9 @@ class GameState {
             // Energy & Keys
             energy: 0,
             highestUnlockedStage: 1,
-            stageMasteryThreshold: 100,
-            keys: {
-                idhafa: { bronze: false, silver: false, gold: false },
-                diptote: { bronze: false, silver: false, gold: false },
-                participles: { bronze: false, silver: false, gold: false },
-                vocative: { bronze: false, silver: false, gold: false }
-            },
+            stageMasteryThreshold: 70,
+            maxStage,
+            keys: initialKeys,
             
             // Session tracking
             hintsUsed: 0,           // hints used in current question
@@ -36,12 +34,45 @@ class GameState {
             
             // Lab
             labSentences: [],
+            labUnlocked: false,
             
             // Version for migration
             version: '2.0.0'
         };
         
         this._listeners = []; // for UI update subscriptions
+    }
+
+    _buildInitialKeys() {
+        const keys = {};
+        const missions = Array.isArray(window.missionsData) ? window.missionsData : [];
+        missions.forEach((mission) => {
+            if (!mission?.id) return;
+            keys[mission.id] = { bronze: false, silver: false, gold: false };
+        });
+        return keys;
+    }
+
+    _getMaxStage() {
+        const missions = Array.isArray(window.missionsData) ? window.missionsData : [];
+        return Math.max(1, missions.length);
+    }
+
+    _syncDynamicState() {
+        const maxStage = this._getMaxStage();
+        const nextKeys = { ...(this._state.keys || {}) };
+        const missions = Array.isArray(window.missionsData) ? window.missionsData : [];
+
+        missions.forEach((mission) => {
+            if (!mission?.id) return;
+            if (!nextKeys[mission.id]) {
+                nextKeys[mission.id] = { bronze: false, silver: false, gold: false };
+            }
+        });
+
+        this._state.keys = nextKeys;
+        this._state.maxStage = maxStage;
+        this._state.highestUnlockedStage = Math.max(1, Math.min(maxStage, this._state.highestUnlockedStage || 1));
     }
     
     // Subscribe to state changes
@@ -70,6 +101,7 @@ class GameState {
     // Update state (with immutability)
     set(updates) {
         this._state = { ...this._state, ...updates };
+        this._syncDynamicState();
         this._notify();
         // Auto-save after every change
         if (window.StorageManager) {
@@ -87,6 +119,7 @@ class GameState {
         }
         current[parts[parts.length - 1]] = value;
         this._state = newState;
+        this._syncDynamicState();
         this._notify();
         if (window.StorageManager) {
             window.StorageManager.saveGameState(this._state);
@@ -95,6 +128,8 @@ class GameState {
     
     // Reset entire state (clear all progress)
     reset() {
+        const initialKeys = this._buildInitialKeys();
+        const maxStage = this._getMaxStage();
         this._state = {
             currentScreen: 'welcome',
             selectedAvatar: null,
@@ -104,19 +139,16 @@ class GameState {
             missionCompletedPendingFinalize: false,
             energy: 0,
             highestUnlockedStage: 1,
-            stageMasteryThreshold: 100,
-            keys: {
-                idhafa: { bronze: false, silver: false, gold: false },
-                diptote: { bronze: false, silver: false, gold: false },
-                participles: { bronze: false, silver: false, gold: false },
-                vocative: { bronze: false, silver: false, gold: false }
-            },
+            stageMasteryThreshold: 70,
+            maxStage,
+            keys: initialKeys,
             hintsUsed: 0,
             hintsUsedMission: 0,
             currentQuestionIncorrect: 0,
             answersCorrect: 0,
             sessionAnswers: [],
             labSentences: [],
+            labUnlocked: false,
             version: '2.0.0'
         };
         this._notify();
@@ -126,9 +158,11 @@ class GameState {
     loadFromSaved(savedState) {
         if (savedState && savedState.version) {
             this._state = { ...this._state, ...savedState };
-            this._state.highestUnlockedStage = Math.max(1, Math.min(4, this._state.highestUnlockedStage || 1));
+            this._syncDynamicState();
             this._state.stageMasteryThreshold = typeof this._state.stageMasteryThreshold === 'number' ? this._state.stageMasteryThreshold : 100;
             this._notify();
+        } else {
+            console.warn('[Load] invalid saved state (no version)', savedState);
         }
     }
 
@@ -139,7 +173,7 @@ class GameState {
      */
     unlockNextStage(completedStage) {
         const currentHighest = this._state.highestUnlockedStage || 1;
-        const nextStage = Math.min(4, completedStage + 1);
+        const nextStage = Math.min(this._state.maxStage || 1, completedStage + 1);
         if (nextStage > currentHighest) {
             this.set({ highestUnlockedStage: nextStage });
             return true;

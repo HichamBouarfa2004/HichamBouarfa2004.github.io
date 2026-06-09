@@ -1,11 +1,13 @@
+import Sortable from 'sortablejs';
+
 /* ============================================
-   المعلم الرفيق - Drag & Drop Helper (SortableJS)
-   Touch-friendly, RTL-compatible sorting for categories
-   ============================================ */
+    المعلم الرفيق - Drag & Drop Helper (SortableJS)
+    Touch-friendly, RTL-compatible sorting for categories
+    ============================================ */
 
 /**
  * Initialize SortableJS for sorting/categorization questions
- * Uses the global Sortable library (loaded from CDN in index.html)
+ * Uses the bundled Sortable library
  * @param {string} containerId - ID of the container that holds the categories
  * @param {Function} onEndCallback - optional callback when sorting ends
  * @returns {Object} Sortable instances

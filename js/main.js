@@ -1,0 +1,14 @@
+import './utils/arabicUtils.js';
+import './utils/dragDropHelper.js';
+import './data/missions.js';
+import './data/hints.js';
+import './core/GameState.js';
+import './core/ScoringEngine.js';
+import './core/MissionEngine.js';
+import './core/Storage.js';
+import './ui/AvatarRenderer.js';
+import './ui/PopupSystem.js';
+import './ui/ScreenManager.js';
+import './ui/MapUi.js';
+import './ui/MissionUI.js';
+import './app.js';

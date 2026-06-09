@@ -8,10 +8,12 @@ class PopupSystem {
         this.hintPopup = document.getElementById('hintPopup');
         this.successPopup = document.getElementById('successPopup');
         this.victoryDrawer = document.getElementById('victoryDrawer');
+        this.successToast = document.getElementById('successToast');
         this.isOpen = false;
         this.currentCallback = null;
         this.currentVictoryCallback = null;
         this.feedbackTimeout = null;
+        this.successToastTimeout = null;
         this.lastFocusedElement = null;
         this.boundEscapeHandler = this._handleEscapeKey.bind(this);
     }
@@ -169,6 +171,48 @@ class PopupSystem {
     }
 
     /**
+     * Show a brief success toast for mid-mission correct answers.
+     * Auto-hides after 800ms and calls onComplete.
+     * @param {string} text
+     * @param {Function} onComplete
+     */
+    showSuccessToast(text = 'أحسنت!', onComplete = null) {
+        if (!this.successToast) return;
+
+        const textEl = this.successToast.querySelector('.success-toast-text');
+        if (textEl) textEl.textContent = text;
+
+        if (this.successToastTimeout) {
+            clearTimeout(this.successToastTimeout);
+        }
+
+        this.successToast.classList.remove('hidden');
+        this.successToast.classList.add('visible');
+
+        this.successToastTimeout = setTimeout(() => {
+            this.successToast.classList.remove('visible');
+            this.successToast.classList.add('hidden');
+            this.successToastTimeout = null;
+            if (typeof onComplete === 'function') {
+                onComplete();
+            }
+        }, 800);
+    }
+
+    /**
+     * Hide the success toast immediately.
+     */
+    hideSuccessToast() {
+        if (!this.successToast) return;
+        if (this.successToastTimeout) {
+            clearTimeout(this.successToastTimeout);
+            this.successToastTimeout = null;
+        }
+        this.successToast.classList.remove('visible');
+        this.successToast.classList.add('hidden');
+    }
+
+    /**
      * Show the bottom victory drawer used for correct answers.
      * @param {object} options
      */
@@ -221,6 +265,7 @@ class PopupSystem {
         this.hideHintPopup();
         this.hideSuccessPopup();
         this.hideVictoryDrawer();
+        this.hideSuccessToast();
     }
 }
 

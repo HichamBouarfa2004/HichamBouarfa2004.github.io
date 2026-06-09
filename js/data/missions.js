@@ -3,12 +3,15 @@
    All mission content, questions, answers, explanations
    ============================================ */
 
-const missionsData = [
+const CUSTOM_MISSIONS_STORAGE_KEY = 'alMuarifCustomMissionsV1';
+
+const baseMissionsData = [
     {
         id: 'idhafa',
         title: 'الإضافة',
         description: 'ابحث عن المضاف إليه المفقود',
         scenario: 'خزانة الأسرار مقفلة! أوجد المضاف إليه لفتحها',
+        difficulty: 'easy',
         rule: 'الإضافة هي نسبة بين اسمين، حيث يُضاف الأول إلى الثاني. المضاف إليه دائماً مجرور.',
         questions: [
             {
@@ -52,6 +55,7 @@ const missionsData = [
         title: 'الممنوع من الصرف',
         description: 'ميّز الكلمات الممنوعة من الصرف',
         scenario: 'الحواجز تمنعك من المرور! اكتشف الكلمات الممنوعة',
+        difficulty: 'hard',
         rule: 'الممنوع من الصرف هو الاسم الذي لا يقبل التنوين ويُرفع بالضمة وينصب ويُجر بالفتحة',
         questions: [
             {
@@ -66,10 +70,10 @@ const missionsData = [
                 type: 'sorting',
                 items: ['فاطمة', 'مقاتل', 'مساحات', 'كرسي', 'مكة', 'مدارس'],
                 categories: {
-                    'ممنوع من الصرف': ['فاطمة', 'مقاتل', 'مساحات', 'مكة', 'مدارس'],
-                    'غير ممنوع': ['كرسي']
+                    'ممنوع من الصرف': ['فاطمة', 'مقاتل', 'مكة', 'مدارس'],
+                    'غير ممنوع': ['كرسي', 'مساحات']
                 },
-                explanation: 'الأسماء العلم المؤنثة والجموع التكسيرية ممنوعة من الصرف'
+                explanation: 'الأسماء العلم المؤنثة والجموع التكسيرية ممنوعة من الصرف. مساحات جمع مؤنث سالم وليست ممنوعة'
             },
             {
                 text: 'هل كلمة "أحمد" ممنوعة من الصرف؟',
@@ -103,6 +107,7 @@ const missionsData = [
         title: 'الأسماء المشتقة',
         description: 'صمّم دروعك من اسم الفاعل والمفعول',
         scenario: 'استخدم قوة الأفعال! صمّم دروعك اللغوية',
+        difficulty: 'medium',
         rule: 'اسم الفاعل يصاغ من الفعل بمعنى من يفعل، واسم المفعول يصاغ بمعنى من وقع عليه الفعل',
         questions: [
             {
@@ -151,6 +156,7 @@ const missionsData = [
         title: 'النداء',
         description: 'استدعِ المساعدة بالنداء الصحيح',
         scenario: 'استدعِ المساعدة! استخدم أداة النداء الصحيحة',
+        difficulty: 'medium',
         rule: 'النداء هو استدعاء المخاطب باستخدام أدوات: يا، أيا، هيا، أي. اختر الأداة حسب القرب والبعد',
         questions: [
             {
@@ -191,5 +197,153 @@ const missionsData = [
     }
 ];
 
-// Export for global use
-window.missionsData = missionsData;
+function deepClone(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeQuestion(question) {
+    if (!question || typeof question !== 'object') return null;
+
+    const type = String(question.type || '').trim();
+    const text = String(question.text || '').trim();
+    const explanation = String(question.explanation || '').trim();
+    if (!type || !text) return null;
+
+    if (type === 'multiple-choice') {
+        const options = Array.isArray(question.options)
+            ? question.options.map(opt => String(opt || '').trim()).filter(Boolean)
+            : [];
+        const correct = Number.isInteger(question.correct) ? question.correct : parseInt(question.correct, 10);
+        if (options.length < 2 || Number.isNaN(correct) || correct < 0 || correct >= options.length) {
+            return null;
+        }
+        return { text, type, options, correct, explanation };
+    }
+
+    if (type === 'fill-blank') {
+        const correct = String(question.correct || '').trim();
+        if (!correct) return null;
+        return { text, type, correct, explanation };
+    }
+
+    if (type === 'sorting') {
+        // Keep sorting questions valid when edited/imported externally.
+        const items = Array.isArray(question.items) ? question.items.map(String) : [];
+        const categories = question.categories && typeof question.categories === 'object' ? question.categories : null;
+        if (!items.length || !categories || !Object.keys(categories).length) return null;
+        return { text, type, items, categories, explanation };
+    }
+
+    return null;
+}
+
+function normalizeMission(mission, fallbackIndex = 0) {
+    if (!mission || typeof mission !== 'object') return null;
+
+    const id = String(mission.id || `mission-${fallbackIndex + 1}`).trim();
+    const title = String(mission.title || '').trim();
+    const description = String(mission.description || '').trim();
+    const scenario = String(mission.scenario || '').trim();
+    const rule = String(mission.rule || '').trim();
+    const image = String(mission.image || '').trim();
+    const difficulty = String(mission.difficulty || 'medium').trim();
+
+    if (!id || !title || !description || !scenario || !rule) return null;
+
+    const questions = Array.isArray(mission.questions)
+        ? mission.questions.map(normalizeQuestion).filter(Boolean)
+        : [];
+
+    if (!questions.length) return null;
+
+    return {
+        id,
+        title,
+        description,
+        scenario,
+        rule,
+        image,
+        difficulty,
+        questions
+    };
+}
+
+function loadCustomMissions() {
+    try {
+        const raw = localStorage.getItem(CUSTOM_MISSIONS_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+            .map((mission, index) => normalizeMission(mission, index))
+            .filter(Boolean);
+    } catch (error) {
+        console.warn('Failed to load custom missions:', error);
+        return [];
+    }
+}
+
+function saveCustomMissions(customMissions) {
+    const normalized = Array.isArray(customMissions)
+        ? customMissions.map((mission, index) => normalizeMission(mission, index)).filter(Boolean)
+        : [];
+    localStorage.setItem(CUSTOM_MISSIONS_STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
+}
+
+function composeMissionsData() {
+    const base = deepClone(baseMissionsData).map((mission, index) => normalizeMission(mission, index)).filter(Boolean);
+    const custom = loadCustomMissions();
+    const byId = new Map();
+
+    base.forEach(mission => byId.set(mission.id, mission));
+    custom.forEach(mission => byId.set(mission.id, mission));
+
+    return Array.from(byId.values());
+}
+
+function applyMissionsData(nextMissions) {
+    window.missionsData = nextMissions;
+}
+
+function upsertMission(mission) {
+    const normalized = normalizeMission(mission);
+    if (!normalized) {
+        throw new Error('بيانات الجزيرة غير مكتملة أو غير صحيحة');
+    }
+
+    const customMissions = loadCustomMissions();
+    const index = customMissions.findIndex(item => item.id === normalized.id);
+    if (index >= 0) {
+        customMissions[index] = normalized;
+    } else {
+        customMissions.push(normalized);
+    }
+
+    saveCustomMissions(customMissions);
+    const merged = composeMissionsData();
+    applyMissionsData(merged);
+    return deepClone(normalized);
+}
+
+function removeCustomMission(missionId) {
+    const filtered = loadCustomMissions().filter(mission => mission.id !== missionId);
+    saveCustomMissions(filtered);
+    const merged = composeMissionsData();
+    applyMissionsData(merged);
+    return merged;
+}
+
+function getMissionEditorSnapshot() {
+    return {
+        baseMissions: deepClone(baseMissionsData),
+        customMissions: loadCustomMissions(),
+        missions: deepClone(window.missionsData || [])
+    };
+}
+
+applyMissionsData(composeMissionsData());
+
+window.upsertMission = upsertMission;
+window.removeCustomMission = removeCustomMission;
+window.getMissionEditorSnapshot = getMissionEditorSnapshot;

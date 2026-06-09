@@ -3,16 +3,18 @@
    Displays avatars in helper, profile, hint popup
    ============================================ */
 
+import { appAssets } from '../assets.js';
+
 class AvatarRenderer {
     constructor() {
         this.gameState = window.gameState;
         this.avatarAssets = {
             sibawayh: {
-                src: 'assets/images/avatar-sibawayh.jpeg',
+                src: appAssets.avatars.sibawayh,
                 name: 'سيبويه'
             },
             'al-farahidi': {
-                src: 'assets/images/avatar-al-farahidi.jpeg',
+                src: appAssets.avatars['al-farahidi'],
                 name: 'الفراهيدي'
             }
         };

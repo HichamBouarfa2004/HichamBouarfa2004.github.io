@@ -81,6 +81,16 @@ class ScreenManager {
         const energyText = document.getElementById('energyText');
         if (energyFill) energyFill.style.width = energy + '%';
         if (energyText) energyText.textContent = energy + '%';
+
+        // Update learner level badge on hub
+        const hubLevelBadge = document.getElementById('hubLevelBadge');
+        if (hubLevelBadge) {
+            let level = 'مبتدئ';
+            if (energy >= 30) level = 'متوسط';
+            if (energy >= 60) level = 'متقدم';
+            if (energy >= 90) level = 'خبير';
+            hubLevelBadge.textContent = `🔰 ${level}`;
+        }
         
         // Update keys display
         this._renderKeys();
@@ -115,8 +125,8 @@ class ScreenManager {
         keysContainer.innerHTML = '';
         const keys = this.gameState.get('keys');
         let totalKeys = 0;
-        
-        const missionOrder = ['idhafa', 'diptote', 'participles', 'vocative'];
+
+        const missionOrder = (window.missionsData || []).map(mission => mission.id);
         missionOrder.forEach(mission => {
             ['gold', 'silver', 'bronze'].forEach(type => {
                 if (keys[mission] && keys[mission][type]) {
@@ -130,8 +140,12 @@ class ScreenManager {
                 }
             });
         });
-        
-        if (keysCountSpan) keysCountSpan.textContent = `${totalKeys}/12`;
+
+        const totalPossible = missionOrder.length * 3;
+        if (keysCountSpan) {
+            keysCountSpan.textContent = `${totalKeys}/${totalPossible}`;
+            keysCountSpan.title = `لديك ${totalKeys} مفتاحاً من أصل ${totalPossible}`;
+        }
     }
     
     /**
@@ -152,12 +166,26 @@ class ScreenManager {
      * Update mission progress indicators on hub
      */
     _updateMissionProgress() {
-        const missions = ['idhafa', 'diptote', 'participles', 'vocative'];
+        const missions = (window.missionsData || []).map(mission => mission.id);
         const sessionAnswers = this.gameState.get('sessionAnswers');
         
         missions.forEach(missionId => {
             const counterSpan = document.getElementById(`${missionId}-questions`);
-            if (!counterSpan) return;
+            if (!counterSpan) {
+                const missionCard = document.querySelector(`.island-card[data-mission="${missionId}"]`);
+                if (missionCard) {
+                    const keyCounter = missionCard.querySelector(`#keys-${missionId}`);
+                    if (keyCounter) {
+                        const earned = this.gameState.get('keys')[missionId] || {};
+                        let earnedCount = 0;
+                        if (earned.gold) earnedCount = 3;
+                        else if (earned.silver) earnedCount = 2;
+                        else if (earned.bronze) earnedCount = 1;
+                        keyCounter.textContent = String(earnedCount);
+                    }
+                }
+                return;
+            }
             
             const missionData = window.missionsData?.find(m => m.id === missionId);
             if (!missionData) return;
@@ -200,7 +228,8 @@ class ScreenManager {
         if (levelSpan) levelSpan.textContent = level;
         
         if (energySpan) energySpan.textContent = energy + '%';
-        if (keysSpan) keysSpan.textContent = `${totalKeys}/12`;
+        const totalPossible = (window.missionsData || []).length * 3;
+        if (keysSpan) keysSpan.textContent = `${totalKeys}/${totalPossible}`;
         if (correctSpan) correctSpan.textContent = correctAnswers;
     }
     

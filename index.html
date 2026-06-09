@@ -12,26 +12,39 @@
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Local CSS fallback for direct file:// opening -->
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/avatars.css">
+    <link rel="stylesheet" href="./css/animations.css">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/avatars.css">
-    <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
     <div id="app" class="app-container">
         
         <!-- ==================== WELCOME SCREEN ==================== -->
         <section id="welcomeScreen" class="screen screen-active">
+            <div class="welcome-particles">
+                <span class="particle" style="top:8%;left:12%;animation-delay:0s"></span>
+                <span class="particle" style="top:22%;right:18%;animation-delay:1.8s;width:5px;height:5px;opacity:0.5"></span>
+                <span class="particle" style="top:45%;left:8%;animation-delay:3.5s;width:4px;height:4px;opacity:0.4"></span>
+                <span class="particle" style="top:60%;right:22%;animation-delay:0.8s;width:6px;height:6px;opacity:0.6"></span>
+                <span class="particle" style="top:78%;left:20%;animation-delay:2.5s;width:3px;height:3px;opacity:0.3"></span>
+                <span class="particle" style="top:35%;right:10%;animation-delay:4.2s;width:5px;height:5px;opacity:0.4"></span>
+            </div>
+
             <div class="welcome-content">
                 <div class="welcome-logo-container">
                     <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="app-logo">
                 </div>
-                <p class="welcome-subtitle">من إعداد: ليلى بعرفة</p>
+                <p class="welcome-brand">المعلم الرفيق</p>
                 <h1 class="welcome-title">مفاتيح التعلم الذكية</h1>
                 <p class="welcome-description">لعبة تعليمية تفاعلية لطلاب الثالثة إعدادي</p>
-                <button id="startBtn" class="btn btn-primary btn-lg">ابدأ الرحلة</button>
+                <button id="startBtn" class="btn btn-lg btn-welcome">ابدأ الرحلة</button>
+                <p class="welcome-credit">من إعداد: ليلى بعرفة</p>
             </div>
+
+            <div class="welcome-wave"></div>
         </section>
 
         <!-- ==================== AVATAR SELECTION ==================== -->
@@ -64,29 +77,34 @@
         <section id="hubScreen" class="screen">
             <div class="hub-container">
                 <header class="hub-header">
-                    <div class="hub-branding">
-                        <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="hub-logo">
-                        <span class="hub-title">المعلم الرفيق</span>
+                    <div class="hub-header-row hub-header-top">
+                        <div class="hub-branding">
+                            <img src="assets/images/icon.jpeg" alt="المعلم الرفيق" class="hub-logo">
+                            <span class="hub-title">المعلم الرفيق</span>
+                        </div>
+                        <div class="avatar-display">
+                            <img id="headerAvatarImg" src="assets/images/avatar-sibawayh.jpeg" alt="avatar" class="header-avatar-img">
+                            <div class="avatar-info">
+                                <span id="headerAvatarName" class="header-avatar-name">سيبويه</span>
+                                <span id="hubLevelBadge" class="hub-level-badge">🔰 مبتدئ</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="avatar-display">
-                        <img id="headerAvatarImg" src="assets/images/avatar-sibawayh.jpeg" alt="avatar" class="header-avatar-img">
-                        <span id="headerAvatarName" class="header-avatar-name">سيبويه</span>
-                    </div>
-                    <div class="stats-container">
+                    <div class="hub-header-row hub-header-bottom">
                         <div class="energy-bar-wrapper">
-                            <label>طاقة الفصاحة</label>
+                            <span class="stat-label">طاقة الفصاحة</span>
                             <div class="energy-bar">
                                 <div id="energyFill" class="energy-fill" style="width:0%"></div>
                             </div>
-                            <span id="energyText">0%</span>
+                            <span id="energyText" class="stat-value">0%</span>
                         </div>
                         <div class="keys-display">
-                            <label>المفاتيح المكتسبة</label>
+                            <span class="stat-label">المفاتيح</span>
                             <div id="keysContainer" class="keys-grid"></div>
-                            <span id="keysCount">0/12</span>
+                            <span id="keysCount" class="stat-value">0/12</span>
                         </div>
+                        <button id="profileBtn" class="btn btn-icon btn-profile" title="ملفك">👤</button>
                     </div>
-                    <button id="profileBtn" class="btn btn-secondary btn-sm">👤 ملفك</button>
                 </header>
 
 <div class="world-map-container">
@@ -171,12 +189,19 @@
         <section id="missionScreen" class="screen">
             <div class="mission-container">
                 <header class="mission-header">
-                    <button id="backBtn" class="btn btn-icon">← العودة</button>
+                    <button id="backBtn" class="btn btn-secondary btn-back" type="button" aria-label="العودة إلى الخريطة">
+                        <span aria-hidden="true">↩</span>
+                        <span>العودة للخريطة</span>
+                    </button>
                     <div class="mission-info">
                         <h2 id="missionTitle">المهمة</h2>
-                        <span id="questionCounter">0/0</span>
+                        <div class="progress-wrap">
+                            <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+                            <span id="questionCounter" class="progress-label">0/0</span>
+                        </div>
                     </div>
                     <div class="energy-mini">
+                        <div class="energy-mini-bar"><div class="energy-mini-fill" id="missionEnergyFill"></div></div>
                         <span id="missionEnergy">0%</span>
                     </div>
                 </header>
@@ -208,9 +233,12 @@
                     </div>
                 </main>
 
+                <div id="successToast" class="success-toast hidden" role="status" aria-live="polite">
+                    <span class="success-toast-text">أحسنت!</span>
+                </div>
+
                 <div id="victoryDrawer" class="victory-drawer hidden" aria-live="polite" aria-atomic="true">
                     <div class="victory-drawer-content">
-                        <div class="victory-celebration" aria-hidden="true">🎊</div>
                         <div class="victory-text-wrap">
                             <div id="victoryTitle" class="victory-title">أحسنت!</div>
                             <p id="victoryMessage" class="victory-message">إجابة صحيحة. استمر واصل التحدي.</p>
@@ -309,40 +337,115 @@
                         <button id="certificateBtn" class="btn btn-secondary">🏆 شهادة الإتقان</button>
                         <button id="resetBtn" class="btn btn-danger">🔄 إعادة تعيين التقدم</button>
                     </div>
+
+                    <div class="profile-section admin-section">
+                        <h3>إدارة المحتوى</h3>
+                        <p class="admin-note">يمكنك إنشاء جزر جديدة وتعديل الأسئلة بعد إدخال كلمة المرور.</p>
+                        <div id="adminLockPanel" class="admin-lock-panel">
+                            <label for="adminPasswordInput">كلمة المرور</label>
+                            <div class="admin-lock-row">
+                                <input id="adminPasswordInput" class="admin-input" type="password" placeholder="أدخل كلمة المرور">
+                                <button id="unlockAdminBtn" class="btn btn-secondary">🔓 فتح</button>
+                            </div>
+                            <p class="admin-hint">مثال: laila123</p>
+                        </div>
+
+                        <div id="adminEditorPanel" class="admin-editor hidden">
+                            <div class="admin-toolbar">
+                                <button id="lockAdminBtn" class="btn btn-secondary">🔒 إغلاق</button>
+                                <button id="newIslandBtn" class="btn btn-primary">➕ جزيرة جديدة</button>
+                            </div>
+
+                            <label for="islandSelector">اختر الجزيرة</label>
+                            <select id="islandSelector" class="admin-input"></select>
+
+                            <div class="admin-grid">
+                                <label for="islandIdInput">معرّف الجزيرة (بالإنجليزية)</label>
+                                <input id="islandIdInput" class="admin-input" type="text" placeholder="example-island">
+
+                                <label for="islandTitleInput">عنوان الجزيرة</label>
+                                <input id="islandTitleInput" class="admin-input" type="text" placeholder="عنوان الجزيرة">
+
+                                <label for="islandDescriptionInput">وصف مختصر</label>
+                                <input id="islandDescriptionInput" class="admin-input" type="text" placeholder="وصف قصير للجزيرة">
+
+                                <label for="islandScenarioInput">سيناريو المهمة</label>
+                                <textarea id="islandScenarioInput" class="admin-input" rows="2" placeholder="اكتب سيناريو المهمة"></textarea>
+
+                                <label for="islandDifficultyInput">مستوى الصعوبة</label>
+                                <select id="islandDifficultyInput" class="admin-input">
+                                    <option value="easy">سهل ⭐</option>
+                                    <option value="medium" selected>متوسط ⭐⭐</option>
+                                    <option value="hard">صعب ⭐⭐⭐</option>
+                                </select>
+
+                                <label for="islandRuleInput">قاعدة الدرس</label>
+                                <textarea id="islandRuleInput" class="admin-input" rows="2" placeholder="اكتب القاعدة"></textarea>
+
+                                <label for="islandImageInput">رابط صورة الجزيرة (اختياري)</label>
+                                <input id="islandImageInput" class="admin-input" type="text" placeholder="assets/images/island-custom.jpeg">
+                            </div>
+
+                            <div class="admin-actions">
+                                <button id="saveIslandBtn" class="btn btn-primary">💾 حفظ الجزيرة</button>
+                                <button id="deleteIslandBtn" class="btn btn-danger">🗑️ حذف الجزيرة</button>
+                            </div>
+
+                            <hr class="admin-separator">
+
+                            <h4>الأسئلة</h4>
+                            <div id="questionsEditorList" class="questions-editor-list"></div>
+
+                            <div class="question-editor-form">
+                                <label for="questionTypeInput">نوع السؤال</label>
+                                <select id="questionTypeInput" class="admin-input">
+                                    <option value="multiple-choice">اختيار من متعدد</option>
+                                    <option value="fill-blank">إكمال الفراغ</option>
+                                </select>
+
+                                <label for="questionTextInput">نص السؤال</label>
+                                <textarea id="questionTextInput" class="admin-input" rows="2" placeholder="اكتب السؤال"></textarea>
+
+                                <div id="mcOptionsWrap" class="mc-options-wrap">
+                                    <label for="questionOptionsInput">خيارات السؤال (كل خيار في سطر)</label>
+                                    <textarea id="questionOptionsInput" class="admin-input" rows="4" placeholder="خيار 1&#10;خيار 2&#10;خيار 3"></textarea>
+                                    <label for="questionCorrectIndexInput">رقم الإجابة الصحيحة (يبدأ من 1)</label>
+                                    <input id="questionCorrectIndexInput" class="admin-input" type="number" min="1" value="1">
+                                </div>
+
+                                <div id="fillBlankWrap" class="fill-blank-wrap hidden">
+                                    <label for="questionCorrectTextInput">الإجابة الصحيحة</label>
+                                    <input id="questionCorrectTextInput" class="admin-input" type="text" placeholder="الإجابة الصحيحة">
+                                </div>
+
+                                <label for="questionExplanationInput">شرح الإجابة</label>
+                                <textarea id="questionExplanationInput" class="admin-input" rows="2" placeholder="شرح مختصر"></textarea>
+
+                                <div class="admin-actions">
+                                    <button id="addQuestionBtn" class="btn btn-primary">➕ إضافة سؤال</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </main>
             </div>
         </section>
 
+        <!-- ==================== RULE POPUP ==================== -->
+        <div id="rulePopup" class="rule-popup hidden" role="dialog" aria-modal="true" aria-label="القاعدة">
+            <div class="rule-popup-backdrop"></div>
+            <div class="rule-popup-content">
+                <div class="rule-popup-header">
+                    <span class="rule-popup-icon">📖</span>
+                    <h3 id="rulePopupTitle">القاعدة</h3>
+                    <button id="rulePopupCloseBtn" class="rule-popup-close" aria-label="إغلاق">✕</button>
+                </div>
+                <div id="rulePopupBody" class="rule-popup-body"></div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- SortableJS for reliable drag-drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    
-    <!-- JavaScript modules (order matters) -->
-    <script src="js/utils/arabicUtils.js"></script>
-    <script src="js/utils/dragDropHelper.js"></script>
-    <script src="js/data/missions.js"></script>
-    <script src="js/data/hints.js"></script>
-    <script src="js/core/GameState.js"></script>
-    <script src="js/core/ScoringEngine.js"></script>
-    <script src="js/core/MissionEngine.js"></script>
-    <script src="js/core/Storage.js"></script>
-    <script src="js/ui/AvatarRenderer.js"></script>
-    <script src="js/ui/PopupSystem.js"></script>
-    <script src="js/ui/ScreenManager.js"></script>
-    <script src="js/ui/MapUI.js"></script>
-    <script src="js/ui/MissionUI.js"></script>
-    <script src="js/app.js"></script>
-
-    <script>
-    window.addEventListener('load', function() {
-        console.log('=== Diagnostic ===');
-        console.log('missionEngine:', typeof window.missionEngine);
-        console.log('missionUI:', typeof window.missionUI);
-        console.log('mapUI:', typeof window.mapUI);
-        console.log('screenManager:', typeof window.screenManager);
-        if (window.mapUI) console.log('mapUI.initMap exists?', typeof window.mapUI.initMap);
-    });
-</script>
+    <script type="module" src="./js/main.js"></script>
 </body>
 </html>

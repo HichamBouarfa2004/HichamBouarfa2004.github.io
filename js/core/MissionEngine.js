@@ -6,8 +6,11 @@
 class MissionEngine {
     constructor() {
         this.gameState = window.gameState;
-        this.missionsData = window.missionsData;
         this.scoringEngine = window.scoringEngine;
+    }
+
+    _getMissionsData() {
+        return Array.isArray(window.missionsData) ? window.missionsData : [];
     }
     
     /**
@@ -15,7 +18,12 @@ class MissionEngine {
      * @param {string} missionId 
      */
     startMission(missionId) {
-        const mission = this.missionsData.find(m => m.id === missionId);
+        // Auto-finalize any orphaned mission completion (e.g. user refreshed before clicking continue)
+        if (this.gameState.get('missionCompletedPendingFinalize')) {
+            this._silentFinalizeMissionCompletion();
+        }
+
+        const mission = this._getMissionsData().find(m => m.id === missionId);
         if (!mission) return false;
         
         this.gameState.set({
@@ -37,7 +45,7 @@ class MissionEngine {
     getCurrentMission() {
         const missionId = this.gameState.get('currentMission');
         if (!missionId) return null;
-        return this.missionsData.find(m => m.id === missionId);
+        return this._getMissionsData().find(m => m.id === missionId);
     }
     
     /**
@@ -157,6 +165,37 @@ class MissionEngine {
     }
     
     /**
+     * Silently finalize mission completion without UI effects (popups, animations).
+     * Used to recover from orphaned state (e.g. user refreshed before clicking continue).
+     */
+    _silentFinalizeMissionCompletion() {
+        const missionId = this.gameState.get('currentMission');
+        if (!missionId) {
+            this.gameState.set({ missionCompletedPendingFinalize: false });
+            return;
+        }
+        const sessionAnswers = this.gameState.get('sessionAnswers').filter(a => a.mission === missionId);
+        const hintsUsedTotal = this.gameState.get('hintsUsedMission');
+        const missionOrder = this._getMissionsData().map(mission => mission.id);
+        const completedStage = Math.max(1, missionOrder.indexOf(missionId) + 1);
+
+        const result = this.scoringEngine.completeMission(missionId, sessionAnswers, hintsUsedTotal);
+
+        if (result.masteryAchieved) {
+            this.gameState.unlockNextStage(completedStage);
+        }
+
+        this.gameState.set({
+            currentMission: null,
+            currentQuestion: 0,
+            hintsUsed: 0,
+            hintsUsedMission: 0,
+            currentQuestionIncorrect: 0,
+            missionCompletedPendingFinalize: false
+        });
+    }
+
+    /**
      * Finalize mission completion and award keys.
      * Called by MissionUI after success popup.
      */
@@ -164,7 +203,7 @@ class MissionEngine {
         const missionId = this.gameState.get('currentMission');
         const sessionAnswers = this.gameState.get('sessionAnswers').filter(a => a.mission === missionId);
         const hintsUsedTotal = this.gameState.get('hintsUsedMission');
-        const missionOrder = ['idhafa', 'diptote', 'participles', 'vocative'];
+        const missionOrder = this._getMissionsData().map(mission => mission.id);
         const completedStage = Math.max(1, missionOrder.indexOf(missionId) + 1);
         
         const result = this.scoringEngine.completeMission(missionId, sessionAnswers, hintsUsedTotal);
@@ -204,7 +243,7 @@ class MissionEngine {
      * @returns {object}
      */
     getMissionProgress(missionId) {
-        const mission = this.missionsData.find(m => m.id === missionId);
+        const mission = this._getMissionsData().find(m => m.id === missionId);
         if (!mission) return null;
         
         const sessionAnswers = this.gameState.get('sessionAnswers');
